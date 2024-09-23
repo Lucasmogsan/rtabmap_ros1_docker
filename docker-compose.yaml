@@ -20,7 +20,9 @@ services:
       # Allows graphical programs in the container.
       - DISPLAY=${DISPLAY}
       - QT_X11_NO_MITSHM=1
+      - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=all
+      - XAUTHORITY=/tmp/.docker.xauth
     volumes:
       # Allows graphical programs in the container.
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
@@ -47,13 +49,15 @@ services:
         - UID=${UID:-1000}
         - GID=${UID:-1000}
         - USERNAME=${USERNAME:-devuser}
-    #environment:
-      #- "ROS_IP=xxx.xx.xx.xx"
-      #- "ROS_MASTER_URI=http://xxx.xx.xx.xx:11311"
+    environment:
+      - XDG_RUNTIME_DIR=/home/${USERNAME}/.runtime
+      - ROS_IP=192.168.8.102  # Or set to the machine's actual IP if needed TODO: How to do?
+      - ROS_MASTER_URI=http://localhost:11311
 
     volumes:
       # Mount the source code
       - ./packages:/overlay_ws/src/:rw 
+      - ./data:/overlay_ws/data/:rw
       - /dev:/dev
 
     user: ${USERNAME:-devuser}

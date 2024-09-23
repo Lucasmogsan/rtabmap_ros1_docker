@@ -53,6 +53,61 @@ Remove everything, including stopped containers and all unused images (not just 
 docker system prune -a
 ```
 
+# ROS
+
+## Demo
+
+
+Following script modifies transformation messages in a ROS bag file by appending `_gt` to the `child_frame_id` of transformations that have a `header.frame_id` of `/world`. This can be useful in scenarios where you need to differentiate between ground truth frames and other frames in a dataset.
+```bash
+python src/rtabmap_custom/src/tum_rename_world_kinect_frame.py data/rgbd_dataset_freiburg3_long_office_household.bag
+```
+
+From the workspace the rtabmap and rosbg can now be started:
+```bash
+cd /overlay_ws
+roslaunch rtabmap_custom rgbdslam_datasets.launch
+rosbag play --clock data/rgbd_dataset_freiburg3_long_office_household.bag
+```
+
+## Create ROS package
+Create package with launch file
+```bash
+catkin_create_pkg rtabmap_custom rospy std_msgs
+cd rtabmap_custom
+mkdir launch
+```
+
+Change permissions if a python file is created
+```bash
+chmod +x src/your_node_script.py
+```
+
+Build and source
+```bash
+cd /overlay_ws
+catkin build
+source devel/setup.bash
+```
+
+## ROS bag
+
+[TUM RGB-D dataset](https://cvg.cit.tum.de/data/datasets/rgbd-dataset/download#freiburg3_walking_xyz). Rosbags can be downloadet further down in the link.
+
+Topics for TUM-dataset:
+- /camera/depth/camera_info
+- /camera/depth/image
+- /camera/rgb/camera_info
+- /camera/rgb/image_color
+
+
+Play rosbag
+```bash
+rosbag play --clock data/demo_mapping.bag
+```
+
+
+
 # Submodules
 Clone the repo with submodules:
 ```bash

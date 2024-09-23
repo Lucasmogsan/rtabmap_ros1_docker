@@ -26,4 +26,9 @@ else
   echo "Overlay workspace not found. Proceeding without it."
 fi
 
+# Ensure XDG_RUNTIME_DIR is set up correctly for the current user
+mkdir -p "$HOME/.runtime"
+chmod 0700 "$HOME/.runtime"
+chown "$USER":"$USER" "$HOME/.runtime"
+
 exec "$@"

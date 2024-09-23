@@ -6,12 +6,12 @@ ARG ROS_DISTRO=noetic
 # Contains ONLY core dependencies
 ###############################################################################################
 
-# Base image from https://hub.docker.com/r/osrf/ros/tags    (desktop-full for full ROS with GUI etc.)
-FROM osrf/ros:${ROS_DISTRO}-desktop-full as base    
+# Use Base Image from introlab3it/rtabmap_ros
+FROM introlab3it/rtabmap_ros:${ROS_DISTRO}-latest as base
 ENV ROS_DISTRO=${ROS_DISTRO}
 SHELL ["/bin/bash", "-c"]
 
-# Install bare minimum system dependencies - can add --no-install-recommends to reduce size
+# Install additional apt packages (for development)
 RUN apt-get update && apt-get install -y \
   cmake \
   g++ \
@@ -23,10 +23,10 @@ RUN apt-get update && apt-get install -y \
   nano \
   iputils-ping \
   python3-vcstool \
-&& apt-get clean \
-&& rm -rf /var/lib/apt/lists/*
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
 
-# Minimal Python dependencies (only core libraries)
+# Install additional pip packages (project-specific)
 RUN pip3 install --upgrade pip \
 && pip3 install \
   rospkg \
@@ -69,25 +69,34 @@ RUN ln -s /usr/bin/python3 /usr/bin/python
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 
+
 ###############################################################################################
 # Overlay Image (frequently changed) #
 # Contains project-specific dependencies and source code
 ###############################################################################################
 FROM base as overlay
 
-# Install additional apt packages (project-specific) - can add --no-install-recommends to reduce size
 RUN apt-get update && apt-get install -y \
-  nano \
+  gdb \
+  curl \
+  build-essential \
+  htop \
+  net-tools \
+  psmisc \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
-# Install additional Python dependencies (project-specific)
-RUN pip3 install numpy
+# Install additional pip packages (project-specific)
+RUN pip3 install --upgrade pip \
+&& pip3 install \
+  rospkg \
+  catkin_pkg \
+  numpy \
+  opencv-python
 
 # Workspace setup (this is to be modified frequently)
 RUN mkdir -p /overlay_ws/src
 COPY ../packages/ /overlay_ws/src
-
 # Initialize Catkin workspace
 WORKDIR /overlay_ws/src
 RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
@@ -103,7 +112,6 @@ WORKDIR /overlay_ws
 COPY ./docker/entrypoint.sh /
 ENTRYPOINT ["/entrypoint.sh"]
 
-
 ################################################################################################
 # Development Image #
 # Tools used only in development are installed here
@@ -112,15 +120,12 @@ FROM overlay as dev
 
 # Install additional apt packages (development-specific) - can add --no-install-recommends to reduce size
 RUN apt-get update && apt-get install -y \
-  gdb \
   gdbserver \
-  nano \
   usbutils \
+  ros-${ROS_DISTRO}-rqt \
+  ros-${ROS_DISTRO}-rqt-common-plugins \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
-
-# Install additional Python dependencies (development-specific)
-# RUN pip3 install 
 
 # Dev container arguments
 ARG USERNAME=devuser
@@ -134,10 +139,6 @@ RUN groupadd --gid $GID $USERNAME \
  && chmod 0440 /etc/sudoers.d/${USERNAME} \
  && mkdir -p /home/${USERNAME} \
  && chown -R ${UID}:${GID} /home/${USERNAME}
-
-# Add user to dialout group (for serial communication)
-RUN getent group dialout || groupadd --gid 20 dialout \
- && usermod -a -G dialout ${USERNAME}
 
 # Set the ownership of the overlay workspace to the new user
 RUN chown -R ${UID}:${GID} /overlay_ws/ /underlay_ws/
