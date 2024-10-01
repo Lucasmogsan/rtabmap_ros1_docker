@@ -51,8 +51,8 @@ services:
         - USERNAME=${USERNAME:-devuser}
     environment:
       - XDG_RUNTIME_DIR=/home/${USERNAME}/.runtime
-      - ROS_IP=192.168.8.102  # Or set to the machine's actual IP if needed TODO: How to do?
-      - ROS_MASTER_URI=http://localhost:11311
+      #- ROS_MASTER_URI=http://localhost:11311
+      #- ROS_IP=192.168.8.102  # Or set to the machine's actual IP if needed TODO: How to do?
 
     volumes:
       # Mount the source code
