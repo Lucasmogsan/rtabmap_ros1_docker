@@ -57,7 +57,8 @@ services:
     volumes:
       # Mount the source code
       - ./packages:/overlay_ws/src/:rw 
-      - ./data:/overlay_ws/data/:rw
+      - ./../thesis_utils/download_benchmark_data/dataset:/overlay_ws/data/:rw
+      - ./../thesis_utils/output_analysis/runs:/overlay_ws/output_runs/:rw
       - /dev:/dev
 
     user: ${USERNAME:-devuser}

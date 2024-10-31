@@ -60,7 +60,9 @@ docker system prune -a
 
 Following script modifies transformation messages in a ROS bag file by appending `_gt` to the `child_frame_id` of transformations that have a `header.frame_id` of `/world`. This can be useful in scenarios where you need to differentiate between ground truth frames and other frames in a dataset.
 ```bash
-python src/rtabmap_custom/src/tum_rename_world_kinect_frame.py data/rgbd_dataset_freiburg3_long_office_household.bag
+python src/rtabmap_custom/src/tum_rename_world_kinect_frame.py data/TUM_ROS/rgbd_dataset_freiburg1_desk.bag
+python src/rtabmap_custom/src/tum_rename_world_kinect_frame.py data/TUM_ROS/rgbd_dataset_freiburg2_xyz.bag
+python src/rtabmap_custom/src/tum_rename_world_kinect_frame.py data/TUM_ROS/rgbd_dataset_freiburg3_long_office_household.bag
 ```
 
 From the workspace the rtabmap and rosbg can now be started:
@@ -92,7 +94,7 @@ source devel/setup.bash
 
 ## ROS bag
 
-[TUM RGB-D dataset](https://cvg.cit.tum.de/data/datasets/rgbd-dataset/download#freiburg3_walking_xyz). Rosbags can be downloadet further down in the link.
+[TUM RGB-D dataset](https://cvg.cit.tum.de/data/datasets/rgbd-dataset/download#freiburg3_long_office_household). Rosbags can be downloadet further down in the link.
 
 Topics for TUM-dataset:
 - /camera/depth/camera_info
