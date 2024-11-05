@@ -61,6 +61,7 @@ docker system prune -a
 Following script modifies transformation messages in a ROS bag file by appending `_gt` to the `child_frame_id` of transformations that have a `header.frame_id` of `/world`. This can be useful in scenarios where you need to differentiate between ground truth frames and other frames in a dataset.
 ```bash
 python src/rtabmap_custom/src/tum_rename_world_kinect_frame.py data/TUM_ROS/rgbd_dataset_freiburg1_desk.bag
+python src/rtabmap_custom/src/tum_rename_world_kinect_frame.py data/TUM_ROS/rgbd_dataset_freiburg1_room.bag
 python src/rtabmap_custom/src/tum_rename_world_kinect_frame.py data/TUM_ROS/rgbd_dataset_freiburg2_xyz.bag
 python src/rtabmap_custom/src/tum_rename_world_kinect_frame.py data/TUM_ROS/rgbd_dataset_freiburg3_long_office_household.bag
 ```
@@ -69,8 +70,14 @@ From the workspace the rtabmap and rosbg can now be started:
 ```bash
 cd /overlay_ws
 roslaunch rtabmap_custom rgbdslam_datasets.launch
-rosbag play --clock data/rgbd_dataset_freiburg3_long_office_household.bag
+rosbag play --clock data/TUM_ROS/rgbd_dataset_freiburg3_long_office_household.bag
 ```
+
+Evaluate the results using `rtabmap-databaseViewer`
+```bash
+rtabmap-databaseViewer output_runs/mapPath.db
+```
+
 
 ## Create ROS package
 Create package with launch file
@@ -108,28 +115,3 @@ Play rosbag
 rosbag play --clock data/demo_mapping.bag
 ```
 
-
-
-# Submodules
-Clone the repo with submodules:
-```bash
-git clone --recursive git@github.com:Lucasmogsan/ros1_template.git
-```
-
-Alternatively clone the repo and then get the submodules afterwards:
-
-```bash
-git clone git@github.com:Lucasmogsan/ros1_template.git
-```
-
-```bash
-git submodule update --init --recursive
-```
-
-
-The main repo has references to the submodules. If these submodules are modified, then the main repo may need to update these references in order to pull the latest data.
-```bash
-git submodule update --remote
-```
-
-This modifies the references in the main repo, and these changes needs to be comitted and pushed.
